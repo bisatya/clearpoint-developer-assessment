@@ -1,115 +1,22 @@
 import './App.css'
-import { Image, Alert, Button, Container, Row, Col, Form, Table, Stack } from 'react-bootstrap'
+import { Image, Button, Container, Row, Col, Form, Table, Stack } from 'react-bootstrap'
 import React, { useState, useEffect } from 'react'
-
-const axios = require('axios')
+import Instructions from './components/Instructions'
+import NewTodoItem from './components/NewTodoItem'
+import TodoItemList from './components/TodoItemList'
 
 const App = () => {
-  const [description, setDescription] = useState('')
-  const [items, setItems] = useState([])
+  /*
+    Note:
+    The idea is to update this "refetchToken" everytime an operation that changes the DB occurs (e.g., add new todo item / mark as complete)
+    When the refetchToken is updated, it will trigger the useEffect method inside TodoItemList to re-fetch the data from the server
+    This way, the list of todo items can be stored inside the TodoItemList component
+    Therefore, the App.js component is free from any fetching responsibilities
+  */  
+  const [refetchToken, setRefetchToken] = useState(null);
 
-  useEffect(() => {
-    // todo
-  }, [])
-
-  const renderAddTodoItemContent = () => {
-    return (
-      <Container>
-        <h1>Add Item</h1>
-        <Form.Group as={Row} className="mb-3" controlId="formAddTodoItem">
-          <Form.Label column sm="2">
-            Description
-          </Form.Label>
-          <Col md="6">
-            <Form.Control
-              type="text"
-              placeholder="Enter description..."
-              value={description}
-              onChange={handleDescriptionChange}
-            />
-          </Col>
-        </Form.Group>
-        <Form.Group as={Row} className="mb-3 offset-md-2" controlId="formAddTodoItem">
-          <Stack direction="horizontal" gap={2}>
-            <Button variant="primary" onClick={() => handleAdd()}>
-              Add Item
-            </Button>
-            <Button variant="secondary" onClick={() => handleClear()}>
-              Clear
-            </Button>
-          </Stack>
-        </Form.Group>
-      </Container>
-    )
-  }
-
-  const renderTodoItemsContent = () => {
-    return (
-      <>
-        <h1>
-          Showing {items.length} Item(s){' '}
-          <Button variant="primary" className="pull-right" onClick={() => getItems()}>
-            Refresh
-          </Button>
-        </h1>
-
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.description}</td>
-                <td>
-                  <Button variant="warning" size="sm" onClick={() => handleMarkAsComplete(item)}>
-                    Mark as completed
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </>
-    )
-  }
-
-  const handleDescriptionChange = (event) => {
-    // todo
-  }
-
-  async function getItems() {
-    try {
-      alert('todo')
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  async function handleAdd() {
-    try {
-      alert('todo')
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  function handleClear() {
-    setDescription('')
-  }
-
-  async function handleMarkAsComplete(item) {
-    try {
-      alert('todo')
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const onItemAdded = (id) => setRefetchToken(new Date().getTime());
+  const onItemUpdated = (id) => setRefetchToken(new Date().getTime());
 
   return (
     <div className="App">
@@ -121,33 +28,19 @@ const App = () => {
         </Row>
         <Row>
           <Col>
-            <Alert variant="success">
-              <Alert.Heading>Todo List App</Alert.Heading>
-              Welcome to the ClearPoint frontend technical test. We like to keep things simple, yet clean so your
-              task(s) are as follows:
-              <br />
-              <br />
-              <ol className="list-left">
-                <li>Add the ability to add (POST) a Todo Item by calling the backend API</li>
-                <li>
-                  Display (GET) all the current Todo Items in the below grid and display them in any order you wish
-                </li>
-                <li>
-                  Bonus points for completing the 'Mark as completed' button code for allowing users to update and mark
-                  a specific Todo Item as completed and for displaying any relevant validation errors/ messages from the
-                  API in the UI
-                </li>
-                <li>Feel free to add unit tests and refactor the component(s) as best you see fit</li>
-              </ol>
-            </Alert>
+            <Instructions />
           </Col>
         </Row>
         <Row>
-          <Col>{renderAddTodoItemContent()}</Col>
+          <Col>
+            <NewTodoItem onItemAdded={onItemAdded} />
+          </Col>
         </Row>
         <br />
         <Row>
-          <Col>{renderTodoItemsContent()}</Col>
+          <Col>
+            <TodoItemList refetchToken={refetchToken} onItemUpdated={onItemUpdated} />
+          </Col>
         </Row>
       </Container>
       <footer className="page-footer font-small teal pt-4">
